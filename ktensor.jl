@@ -1,7 +1,7 @@
 struct ktensor
     data :: Array{Float64} # data of the tensor
-    order ::Int # order of the tensor, k
-    parity :: Int # parity of the tensor, p
+    order ::Int8 # order of the tensor, k
+    parity :: Int8 # parity of the tensor, p
 end
 
 function +(a::ktensor, b::ktensor)::ktensor
