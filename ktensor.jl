@@ -38,7 +38,7 @@ end
 function group_mul(a::ktensor, element)::ktensor
 end
 
-function contration(a::ktensor, axis1::Int, axis2::Int)::ktensor
+function contraction(a::ktensor, axis1::Int, axis2::Int)::ktensor
     ex = :(a.data[])
     for i in 1:a.order
         if i == axis1 || i == axis2
@@ -51,8 +51,16 @@ function contration(a::ktensor, axis1::Int, axis2::Int)::ktensor
     return ktensor(result, a.order-2, a.parity, a.dimension)
 end
 
-function levi_civita_contraction(a::ktensor)::ktensor
-
+function levicitva_multiplication(a::ktensor, indices::Array{Int})::ktensor
+    ex = :(a.data[]*levicivita([]))
+    for i in 1:a.order
+        if i in indices
+            ex.args[2].args = vcat(ex.args[2].args,:(ki))
+        else
+            ex.args[2].args = vcat(ex.args[2].args,:i)
+            ex.args[3].args[2].args = vcat(ex.args[3].args[2].args,:i)
+        end
+    end
 end
 
 # TODO(Implement test of the functionality here)
