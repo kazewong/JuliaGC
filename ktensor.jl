@@ -20,3 +20,12 @@ function *(a::ktensor, b::ktensor)::ktensor
     end
     return ktensor(a.order, a.parity, a.data .* b.data)
 end
+
+function *(a::ktensor, b::Float64)::ktensor
+    return ktensor(a.order, a.parity, a.data*b)
+end
+
+function norm(a::ktensor)::Float64
+    return sqrt(sum(a.data.^2))
+end
+
