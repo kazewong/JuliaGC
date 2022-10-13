@@ -1,7 +1,7 @@
 struct ktensor
+    data :: Array{Float64} # data of the tensor
     order ::Int # order of the tensor, k
     parity :: Int # parity of the tensor, p
-    data :: Array{Float64} # data of the tensor
 end
 
 function +(a::ktensor, b::ktensor)::ktensor
@@ -11,18 +11,18 @@ function +(a::ktensor, b::ktensor)::ktensor
     if a.parity != b.parity
         error("Parities of the tensors are not equal")
     end
-    return ktensor(a.order, a.parity, a.data .+ b.data)
+    return ktensor(a.data .+ b.data, a.order, a.parity)
 end
 
 function *(a::ktensor, b::ktensor)::ktensor
     if a.order == 0 || b.order == 0
-        return ktensor(a.order, a.parity, a.data*b.data)
+        return ktensor(a.data*b.data, a.order, a.parity)
     end
-    return ktensor(a.order, a.parity, a.data .* b.data)
+    return ktensor(a.data .* b.data, a.order, a.parity)
 end
 
 function *(a::ktensor, b::Float64)::ktensor
-    return ktensor(a.order, a.parity, a.data*b)
+    return ktensor(a.data*b, a.order, a.parity)
 end
 
 function norm(a::ktensor)::Float64
