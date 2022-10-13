@@ -32,11 +32,7 @@ function make_all_operators(dims::Int)
     gene
 end
 
-struct kptensor
-   order ::Int # order of the tensor, k
-   parity :: Int # parity of the tensor, p
-   data::
-end
+
 
 struct geoFilter
 end
