@@ -1,5 +1,6 @@
 import Base: +,*
 using Tullio
+using Combinatorics
 
 struct ktensor
     data :: Array # data of the tensor, [k, ndims]
@@ -51,16 +52,24 @@ function contraction(a::ktensor, axis1::Int, axis2::Int)::ktensor
     return ktensor(result, a.order-2, a.parity, a.dimension)
 end
 
-function levicitva_multiplication(a::ktensor, indices::Array{Int})::ktensor
-    ex = :(a.data[]*levicivita([]))
+function levicitva_multiplication(a::ktensor, index::Int)::ktensor
+    string = 
+    ex = :(a.data[Meta.parse()]*levicivita([]))
+    outputex = :(S[])
+
     for i in 1:a.order
         if i in indices
-            ex.args[2].args = vcat(ex.args[2].args,:(ki))
-        else
             ex.args[2].args = vcat(ex.args[2].args,:i)
             ex.args[3].args[2].args = vcat(ex.args[3].args[2].args,:i)
+            outputex.args = vcat(outputex.args,:i)
+        else
+            ex.args[2].args = vcat(ex.args[2].args,Meta.parse("k"*string(i)))
+            ex.args[3].args[2].args = vcat(ex.args[3].args[2].args,Meta.parse(string(i)))
+            outputex.args = vcat(outputex.args,Meta.parse("k"*string(i)))
         end
     end
+    result = eval(:(@tullio $outputex := $ex))
+    return ktensor(result, a.order,  mod(a.parity + 1,2) , a.dimension)    
 end
 
 # TODO(Implement test of the functionality here)
