@@ -53,21 +53,19 @@ function contraction(a::ktensor, axis1::Int, axis2::Int)::ktensor
 end
 
 function levicivita_multiplication(a::ktensor, indices::Array{Int})::ktensor
-    symbols = Symbol[]
-    levi_symbols = []
+    ex = :(a.data[]*levicivita([]))
+    outputex = :(S[])
     for i in 1:a.order
         if i in indices
-            push!(symbols, Symbol("i"*string(i)))
-            push!(levi_symbols, Symbol("i"*string(i)))
+            ex.args[2].args = vcat(ex.args[2].args, Meta.parse("i"*string(i)))
+            ex.args[3].args[2].args = vcat(ex.args[3].args[2].args,Meta.parse("i"*string(i)))
+            outputex.args = vcat(outputex.args, Meta.parse("i"*string(i)))
         else
-            push!(symbols, Symbol("k"*string(i)))
-            push!(levi_symbols, Meta.parse(string(i)))
+            ex.args[2].args = vcat(ex.args[2].args, Meta.parse("k"*string(i)))
+            ex.args[3].args[2].args = vcat(ex.args[3].args[2].args, Meta.parse(string(i)))
+            outputex.args = vcat(outputex.args, Meta.parse("k"*string(i)))
         end
     end
-    ex = :(a.data[symbols]*levicivita($levi_symbols))
-    outputex = :(S[symbols])
-
-    print(ex)
     result = eval(:(@tullio $outputex := $ex))
     return ktensor(result, a.order,  mod(a.parity + 1,2) , a.dimension)    
 end
