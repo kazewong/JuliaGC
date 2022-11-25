@@ -9,7 +9,8 @@ struct ktensor{O,P,D}
     parity::Val{P} # parity of the tensor, p
     dimension::Val{D} # dimension of the space where the tensor lives, d
 
-    function ktensor(data::Array{Float64,_O}; parity::Int, dimension::Int) where {_O}
+    function ktensor(data::Array{Float64,_O}; parity::Int) where {_O}
+        dimension = size(data,1)
         return new{_O,parity,dimension}(data, Val(_O), Val(parity), Val(dimension))
     end
 end
