@@ -72,11 +72,8 @@ function LinearAlgebra.tr(x::AbstractArray{T,N}; dims) where {T,N}
 end
 
 function contract(a::ktensor{O,P,D}, axis1::Int, axis2::Int) where {O,P,D}
-    return ktensor(
-        LinearAlgebra.tr(a.data; dims=(axis1, axis2)),
-        Val(O-2),
-        Val(P),
-        Val(D)
+    return ktensor{O-2,P,D}(
+        LinearAlgebra.tr(a.data; dims=(axis1, axis2))
     )
 end
 
