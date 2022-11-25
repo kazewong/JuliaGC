@@ -9,6 +9,10 @@ struct ktensor{O,P,D}
     parity::Val{P} # parity of the tensor, p
     dimension::Val{D} # dimension of the space where the tensor lives, d
 
+    function ktensor{O,P,D}(data::Array{Float64,O}) where {O,P,D}
+        return new{O,P,D}(data, Val(O), Val(P), Val(D))
+    end
+
     function ktensor(data::Array{Float64,_O}; parity::Int) where {_O}
         dimension = size(data,1)
         return new{_O,parity,dimension}(data, Val(_O), Val(parity), Val(dimension))
@@ -20,7 +24,7 @@ end
 @inline dimension(::ktensor{O,P,D}) where {O,P,D} = D
 
 function ktensor_like(a::ktensor{O,P,D}, data)::ktensor{O,P,D} where {O,P,D}
-    return ktensor{O,P,D}(data, Val(O), Val(P), Val(D))
+    return ktensor{O,P,D}(data)
 end
 
 function Base.:+(a::K, b::ktensor)::K where {K<:ktensor}
