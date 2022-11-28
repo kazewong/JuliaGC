@@ -77,10 +77,11 @@ function contract(a::ktensor{O,P,D}, axis1::Int, axis2::Int) where {O,P,D}
     )
 end
 
-function levicivita_multiplication(a::ktensor, indices::Tuple)::ktensor
+function levicivita_multiplication(a::ktensor{O,P,D}, indices::Tuple) where {O,P,D}
+# This version should work but it is pretty slow
     ex = :(a.data[] * levicivita([]))
     outputex = :(S[])
-    for i in 1:a.order
+    for i in 1:order(a)
         if i in indices
             ex.args[2].args = vcat(ex.args[2].args, Meta.parse("i" * string(i)))
             ex.args[3].args[2].args = vcat(
@@ -94,7 +95,6 @@ function levicivita_multiplication(a::ktensor, indices::Tuple)::ktensor
         end
     end
     result = eval(:(@tullio $outputex := $ex))
-    return ktensor(result, a.order, mod(a.parity + 1, 2), a.dimension)
+    return ktensor{O, mod(P+1,2), D}(result)
 end
-
 # TODO(Implement test of the functionality here)
