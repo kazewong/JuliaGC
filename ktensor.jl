@@ -27,6 +27,10 @@ function ktensor_like(a::ktensor{O,P,D}, data)::ktensor{O,P,D} where {O,P,D}
     return ktensor{O,P,D}(data)
 end
 
+function Base.:+(a::K, b::Real)::K where {K<:ktensor}
+    return ktensor_like(a, a.data .+ b)
+end
+
 function Base.:+(a::K, b::ktensor)::K where {K<:ktensor}
     order(a) != order(b) && error("Orders of the tensors are not equal")
     parity(a) != parity(b) && error("Parities of the tensors are not equal")
