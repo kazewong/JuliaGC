@@ -37,6 +37,10 @@ function Base.:+(a::K, b::ktensor)::K where {K<:ktensor}
     return ktensor_like(a, a.data + b.data)
 end
 
+function Base.:*(a::K, b::Real)::K where {K<:ktensor}
+    return ktensor_like(a, a.data .* b)
+end
+
 function Base.:*(a::K, b::ktensor)::K where {K<:ktensor}
     if order(a) == 1
         return ktensor_like(a, a.data * b.data)
