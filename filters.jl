@@ -6,6 +6,12 @@ struct filter
     parity :: Int8
     dimension :: Int8
     size :: Int8
+
+    function filter(order:: Int, parity:: Int, dimension:: Int, size:: Int)
+        data = zeros(Float64,(size^dimension, dimension, dimension))
+        ktensors = map(x->ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
+        return new(ktensors, order, parity, dimension, size)
+    end
     
 end
 
