@@ -41,6 +41,8 @@ function Base.:*(a::K, b::K) where {K<:ktensor} # Fix  outer product
     return ktensor(a.data .* b.data, parity = a.parity + b.parity)
 end
 
+# Times group element here
+
 norm(a::ktensor)::Float64 = sqrt(sum((x,) -> x^2, a.data))
 
 @generated function _tr_dims(x::AbstractArray{T,N}; dims) where {T,N}

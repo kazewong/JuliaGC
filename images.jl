@@ -1,7 +1,8 @@
-using ReusePatterns
 include("ktensor.jl")
 
-struct Image
+abstract type AbstractImage end
+
+struct Image <: AbstractImage
     data :: AbstractArray{ktensor} # data of the tensor
     order :: Int8
     parity :: Int8
@@ -25,15 +26,15 @@ struct Image
 end
 
 
-function image_like(a::Image, data::AbstractArray{K})::Image where {K<:ktensor}
+function image_like(a::T, data::AbstractArray{K})::T where {T<:AbstractImage,K<:ktensor}
     return Image(data, a.order, a.parity, a.dimension, a.size)
 end
 
-function Base.:+(a::Image, b::T)::Image where {T}
+function Base.:+(a::T, b::ST)::T where {T<:AbstractImage,ST<:Real}
     return image_like(a, a.data .+ b)
 end
 
-function Base.:+(a::Image, b::Image)::Image
+function Base.:+(a::T, b::T)::T where{T<:AbstractImage}
     a.order != b.order && error("Orders of the tensors are not equal")
     a.parity != b.parity && error("Parities of the tensors are not equal")
     a.dimension != b.dimension && error("Dimensions of the tensors are not equal")
@@ -42,11 +43,11 @@ function Base.:+(a::Image, b::Image)::Image
 end
 
 
-function Base.:*(a::Image, b::T)::Image where {T}
+function Base.:*(a::T, b::ST)::T where {T<:AbstractImage, ST<:Real}
     return image_like(a, a.data .* b)
 end
 
-function Base.:*(a::Image, b::Image)::Image
+function Base.:*(a::T, b::T)::T where {T<:AbstractImage}
     a.dimension != b.dimension && error("Dimensions of the tensors are not equal")
     a.size != b.size && error("Sizes of the tensors are not equal")
     return image_like(a, a.data .* b.data)
@@ -58,7 +59,7 @@ end
 
 # Contract
 
-function contract(a::Image, axis1::T, axis2::T) :: Image where{T<:Integer}
+function contract(a::T, axis1::INT, axis2::INT) :: T where{T<:AbstractImage, INT<:Integer}
     return Image(contract.(a.data, axis1, axis2), T(a.order-2), T(a.parity), T(a.dimension), T(a.size))
 end
 
