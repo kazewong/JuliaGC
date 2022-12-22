@@ -39,3 +39,5 @@ function make_all_operators(dims::Int)::Vector{Matrix{Int32}}
     end
     return operators
 end
+
+# Add testing the group
