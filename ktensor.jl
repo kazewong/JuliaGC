@@ -68,7 +68,7 @@ function LinearAlgebra.tr(x::AbstractArray{T,N}; dims) where {T,N}
     return _tr_dims(x; dims=selected_dims)
 end
 
-function contract(a::ktensor, axis1::Int, axis2::Int)
+function contract(a::ktensor, axis1::T, axis2::T) where{T<:Integer}
     return ktensor(
         LinearAlgebra.tr(a.data; dims=(axis1, axis2)), Int8(a.order-2), a.parity, a.dimension
     )
