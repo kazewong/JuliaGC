@@ -9,7 +9,12 @@ struct Filter <: AbstractImage
     size :: Int8
 
     function Filter(order:: Int, parity:: Int, dimension:: Int, size:: Int)
-        data = zeros(Float64,(size^dimension, dimension, dimension))
+        shape = (size^dimension)
+        for i in 1:order
+            shape = (shape..., dimension)
+        end
+        data = zeros(Float64,shape)
+        parity = parity % 2
         ktensors = map(x->ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
         return new(ktensors, order, parity, dimension, size)
     end

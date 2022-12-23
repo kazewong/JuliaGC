@@ -4,7 +4,7 @@ using Combinatorics
 using LinearAlgebra
 
 struct ktensor
-    data::Array{Float64} # data of the tensor, [k, ndims]
+    data::AbstractArray{Float64} # data of the tensor, [k, ndims]
     order::Int8 # order of the tensor, k
     parity::Int8 # parity of the tensor, p
     dimension::Int8 # dimension of the space where the tensor lives, d
