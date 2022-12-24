@@ -86,8 +86,6 @@ function levicivita_contraction(a::ktensor, indices::Tuple) :: ktensor
     levi_array = levicivita.(collect.(reduce(vcat,levi_array)))
     levi_array = reshape(levi_array,ntuple(i->a.dimension, a.dimension))
     shape = Tuple(collect(Iterators.flatten([1,size(a.data)])))
-    print(size(a.data), shape,size(levi_array))
-    print(size(reshape(a.data,shape).*levi_array))
     return ktensor(dropdims(sum(reshape(a.data,shape).*levi_array,dims=1),dims=1),parity=a.parity+1)
 end
 
