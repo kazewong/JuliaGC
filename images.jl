@@ -61,6 +61,10 @@ end
 
 # Unpack
 
+function unpack(a::T)::Array{ktensor} where{T<:AbstractImage}
+    shape = Tuple(repeat([a.size], a.dimension))
+    return reshape(a.data, shape)
+end
 # Convolve
 
 # Contract
