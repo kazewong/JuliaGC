@@ -38,7 +38,11 @@ function Base.:*(a::K, b::K) where {K<:ktensor} # Fix  outer product
     if a.order == 0 || b.order == 0
         return ktensor(a.data .* b.data, parity = a.parity + b.parity)
     end
-    return ktensor(a.data .* b.data, parity = a.parity + b.parity)
+    a_shape = Tuple(collect(Iterators.flatten([size(a.data),ntuple(i->1, b.order)])))
+    a_expand = reshape(a.data, a_shape)
+    b_shape = Tuple(collect(Iterators.flatten([ntuple(i->1, a.order),size(b.data)])))
+    b_expand = reshape(b.data, b_shape)
+    return ktensor(a_expand .* b_expand, parity = a.parity + b.parity)
 end
 
 # Times group element here
