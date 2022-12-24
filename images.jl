@@ -75,4 +75,8 @@ end
 
 # Levi civita Contract
 
+function levicivita_contraction(a::T, indices::Tuple) :: T where{T<:AbstractImage}
+    return Image(levicivita_contraction.(a.data, repeat([indices],size(a.data,1))), a.order, Int8(a.parity+1), a.dimension, a.size)
+end
+
 # Normalize
