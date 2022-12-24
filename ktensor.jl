@@ -80,11 +80,22 @@ function contract(a::ktensor, axis1::T, axis2::T) where{T<:Integer}
     )
 end
 
-# function levicivita_multiplication(a::ktensor{O,P,D}, indices::Tuple) where {O,P,D}
+function levicivita_contraction(a::ktensor, indices::Tuple) :: ktensor
+# Need to check whether indexing is correct
+    levi_array = collect(Base.product(ntuple(i->1:a.dimension, a.dimension)...))
+    levi_array = levicivita.(collect.(reduce(vcat,levi_array)))
+    levi_array = reshape(levi_array,ntuple(i->a.dimension, a.dimension))
+    shape = Tuple(collect(Iterators.flatten([1,size(a.data)])))
+    print(size(a.data), shape,size(levi_array))
+    print(size(reshape(a.data,shape).*levi_array))
+    return ktensor(dropdims(sum(reshape(a.data,shape).*levi_array,dims=1),dims=1),parity=a.parity+1)
+end
+
+# function levicivita_multiplication(input_tensor::ktensor, indices::Tuple)
 # # This version should work but it is pretty slow
-#     ex = :(a.data[] * levicivita([]))
+#     ex = :(input_tensor.data[] * levicivita([]))
 #     outputex = :(S[])
-#     for i in 1:order(a)
+#     for i in 1:a.order
 #         if i in indices
 #             ex.args[2].args = vcat(ex.args[2].args, Meta.parse("i" * string(i)))
 #             ex.args[3].args[2].args = vcat(
@@ -97,7 +108,8 @@ end
 #             outputex.args = vcat(outputex.args, Meta.parse("k" * string(i)))
 #         end
 #     end
+#     print(:(@tullio $outputex := $ex))
 #     result = eval(:(@tullio $outputex := $ex))
-#     return ktensor{O, mod(P+1,2), D}(result)
+#     return ktensor(result)
 # end
 # # TODO(Implement test of the functionality here)
