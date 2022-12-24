@@ -8,7 +8,7 @@ struct ktensor
     order::Int8 # order of the tensor, k
     parity::Int8 # parity of the tensor, p
     dimension::Int8 # dimension of the space where the tensor lives, d
-
+    
     function ktensor(data::AbstractArray{Float64}, order::T, parity::T, dimension::T) where {T<:Integer}
         return new(data, order, parity%2, dimension)
     end

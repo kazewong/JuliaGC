@@ -25,6 +25,12 @@ struct Image <: AbstractImage
     end
 end
 
+function make_pixel(a::T)::AbstractArray where{T<:AbstractImage}
+    # Julia counts from 1, so we don't need to make the key, idiot.
+    range = 1:a.size
+    pixel = collect(Base.product(ntuple(i->range, a.dimension)...))
+    return pixel
+end
 
 function image_like(a::T, data::AbstractArray{K})::T where {T<:AbstractImage,K<:ktensor}
     return Image(data, a.order, a.parity, a.dimension, a.size)
@@ -60,7 +66,7 @@ end
 # Contract
 
 function contract(a::T, axis1::INT, axis2::INT) :: T where{T<:AbstractImage, INT<:Integer}
-    return Image(contract.(a.data, axis1, axis2), T(a.order-2), T(a.parity), T(a.dimension), T(a.size))
+    return Image(contract.(a.data, axis1, axis2), INT(a.order-2), INT(a.parity), INT(a.dimension), INT(a.size))
 end
 
 # Levi civita Contract
