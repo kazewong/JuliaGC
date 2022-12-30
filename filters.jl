@@ -45,6 +45,18 @@ end
 
 # Rectify
 
+function rectify(a::Filter)
+    if a.parity == 0
+        return a
+    else
+        output = copy(a.data)
+        for i in 1:length(output)
+            output[i] = rectify(output[i])
+        end
+        return Filter(output, a.order, 0, a.dimension, a.size)
+    end
+end
+
 
 Base.convert(::Type{Filter}, a::Image) = Filter(a.data, a.order, a.parity, a.dimension, a.size)
 Base.convert(::Type{Image}, a::Filter) = Image(a.data, a.order, a.parity, a.dimension, a.size)

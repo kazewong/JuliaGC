@@ -21,7 +21,7 @@ struct Image <: AbstractImage
     end 
 
     function Image(data::AbstractArray{K}, order::T, parity::T, dimension::T, size::T) where {K<:ktensor,T}
-        return new(data, order, parity, dimension, size)
+        return new(data, order, parity % 2, dimension, size)
     end
 end
 
@@ -84,7 +84,7 @@ end
 function Base.:*(a::T, b::T)::T where {T<:AbstractImage}
     a.dimension != b.dimension && error("Dimensions of the tensors are not equal")
     a.size != b.size && error("Sizes of the tensors are not equal")
-    return image_like(a, a.data .* b.data)
+    return Image(a.data .* b.data, a.order + b.order, a.parity+b.parity, a.dimension, a.size)
 end
 
 # Unpack
