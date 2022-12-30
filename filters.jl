@@ -25,9 +25,25 @@ struct Filter <: AbstractImage
 end
 
 
-function make_pixel_and_keys(m::Int) :: Tuple(Array)
-    range = -m:1:m
+# Convolve
+function convolve(a::T, b::Filter) where{T<:AbstractImage}
+    
 end
+
+# Bigness
+
+function bigness(a::Filter)
+    pixels = make_pixel(a)
+    pixels = collect.(reshape(pixels,length(pixels)))
+    numerator, denominator = 0., 0.
+    for i in 1:length(pixels)
+        numerator += sqrt(sum(((pixels[i].-ceil(a.size/2)) .* norm(a.data[i]).^2)))
+        denominator += norm(a.data[i])
+    end
+    return numerator / denominator
+end
+
+# Rectify
 
 
 Base.convert(::Type{Filter}, a::Image) = Filter(a.data, a.order, a.parity)

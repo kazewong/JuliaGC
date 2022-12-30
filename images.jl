@@ -25,6 +25,8 @@ struct Image <: AbstractImage
     end
 end
 
+# Basic functionalities
+
 function make_pixel(a::T)::AbstractArray where{T<:AbstractImage}
     # Julia counts from 1, so we don't need to make the key, idiot.
     range = 1:a.size
@@ -35,6 +37,28 @@ end
 function image_like(a::T, data::AbstractArray{K})::T where {T<:AbstractImage,K<:ktensor}
     return Image(data, a.order, a.parity, a.dimension, a.size)
 end
+
+function get_index(a::T, indices::Tuple)::ktensor where {T<:AbstractImage}
+    index = 1
+    for i in 1:length(indices)
+        index += (indices[i]-1)*a.size^(i-1)
+    end
+    return a.data[index]
+end
+
+
+function set_index(a::T, indices::Tuple, kt::ktensor) where {T<:AbstractImage}
+    output = copy(a.data)
+    index = 1
+    for i in 1:length(indices)
+        index += (indices[i]-1)*a.size^(i-1)
+    end
+    output[index] = kt
+    return image_like(a, output)
+end
+
+
+# Addition
 
 function Base.:+(a::T, b::ST)::T where {T<:AbstractImage,ST<:Real}
     return image_like(a, a.data .+ b)
@@ -48,6 +72,7 @@ function Base.:+(a::T, b::T)::T where{T<:AbstractImage}
     return image_like(a, a.data .+ b.data)
 end
 
+# Multiplication
 
 function Base.:*(a::T, b::ST)::T where {T<:AbstractImage, ST<:Real}
     return image_like(a, a.data .* b)
@@ -65,7 +90,6 @@ function unpack(a::T)::Array{ktensor} where{T<:AbstractImage}
     shape = Tuple(repeat([a.size], a.dimension))
     return reshape(a.data, shape)
 end
-# Convolve
 
 # Contract
 
