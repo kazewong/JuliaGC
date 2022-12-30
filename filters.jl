@@ -19,8 +19,8 @@ struct Filter <: AbstractImage
         return new(ktensors, order, parity, dimension, size)
     end
 
-    function Filter(data::AbstractArray{ktensor}, order::T, parity::T) where {T<:Integer}
-        return new(data, order, parity, ndims(data) ,size(data,1))
+    function Filter(data::AbstractArray{ktensor}, order::T, parity::T, ndim::T, size::T) where {T<:Integer}
+        return new(data, order, parity, ndim, size)
     end
 end
 
@@ -46,5 +46,5 @@ end
 # Rectify
 
 
-Base.convert(::Type{Filter}, a::Image) = Filter(a.data, a.order, a.parity)
+Base.convert(::Type{Filter}, a::Image) = Filter(a.data, a.order, a.parity, a.dimension, a.size)
 Base.convert(::Type{Image}, a::Filter) = Image(a.data, a.order, a.parity, a.dimension, a.size)
