@@ -48,6 +48,9 @@ end
 
 
 function set_index(a::T, indices::Tuple, kt::ktensor) where {T<:AbstractImage}
+    a.dimension != kt.dimension && error("Dimensions of the tensor does not match the image")
+    a.order != kt.order && error("Orders of the tensor does not match the image")
+    a.parity != kt.parity && error("Parities of the tensor does not match the image")
     output = copy(a.data)
     index = 1
     for i in 1:length(indices)

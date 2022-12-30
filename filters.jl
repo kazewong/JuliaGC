@@ -37,7 +37,7 @@ function bigness(a::Filter)
     pixels = collect.(reshape(pixels,length(pixels)))
     numerator, denominator = 0., 0.
     for i in 1:length(pixels)
-        numerator += sqrt(sum(((pixels[i].-ceil(a.size/2)) .* norm(a.data[i]).^2)))
+        numerator += sqrt(sum((((pixels[i].-ceil(a.size/2)) .* norm(a.data[i])).^2)))
         denominator += norm(a.data[i])
     end
     return numerator / denominator
