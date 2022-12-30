@@ -80,3 +80,8 @@ function levicivita_contraction(a::T, indices::Tuple) :: T where{T<:AbstractImag
 end
 
 # Normalize
+
+function normalize(a::T) :: T where{T<:AbstractImage}
+    max_norm = maximum(norm.(a.data))
+    return a .* (1/max_norm)
+end

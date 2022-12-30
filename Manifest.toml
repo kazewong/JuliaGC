@@ -270,6 +270,12 @@ git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.0"
 
+[[deps.ReusePatterns]]
+deps = ["Combinatorics", "InteractiveUtils", "Statistics", "Test"]
+git-tree-sha1 = "1467be4e01897dae9b5c739643d2de0d790d25e0"
+uuid = "a39b5e78-89b5-562b-97d8-70689129df0c"
+version = "0.3.1"
+
 [[deps.Revise]]
 deps = ["CodeTracking", "Distributed", "FileWatching", "JuliaInterpreter", "LibGit2", "LoweredCodeUtils", "OrderedCollections", "Pkg", "REPL", "Requires", "UUIDs", "Unicode"]
 git-tree-sha1 = "dad726963ecea2d8a81e26286f625aee09a91b7c"
