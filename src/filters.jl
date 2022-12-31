@@ -4,7 +4,7 @@ module filters
 # include("images.jl")
 
 struct Filter <: AbstractImage
-    data :: AbstractArray{ktensor} # data of the tensor
+    data :: AbstractArray{Ktensor} # data of the tensor
     order :: Int8
     parity :: Int8
     dimension :: Int8
@@ -17,11 +17,11 @@ struct Filter <: AbstractImage
         end
         data = zeros(Float64,shape)
         parity = parity % 2
-        ktensors = map(x->ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
-        return new(ktensors, order, parity, dimension, size)
+        ktensors = map(x->Ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
+        return new(Ktensors, order, parity, dimension, size)
     end
 
-    function Filter(data::AbstractArray{ktensor}, order::T, parity::T, ndim::T, size::T) where {T<:Integer}
+    function Filter(data::AbstractArray{Ktensor}, order::T, parity::T, ndim::T, size::T) where {T<:Integer}
         return new(data, order, parity, ndim, size)
     end
 end

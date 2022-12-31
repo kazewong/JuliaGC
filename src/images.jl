@@ -3,7 +3,7 @@ module images
 abstract type AbstractImage end
 
 struct Image <: AbstractImage
-    data :: AbstractArray{ktensor} # data of the tensor
+    data :: AbstractArray{Ktensor} # data of the tensor
     order :: Int8
     parity :: Int8
     dimension :: Int8
@@ -16,11 +16,11 @@ struct Image <: AbstractImage
         end
         data = zeros(Float64,shape)
         parity = parity % 2
-        ktensors = map(x->ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
-        return new(ktensors, order, parity, dimension, size)
+        ktensors = map(x->Ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
+        return new(Ktensors, order, parity, dimension, size)
     end 
 
-    function Image(data::AbstractArray{K}, order::T, parity::T, dimension::T, size::T) where {K<:ktensor,T}
+    function Image(data::AbstractArray{K}, order::T, parity::T, dimension::T, size::T) where {K<:Ktensor,T}
         return new(data, order, parity % 2, dimension, size)
     end
 end
@@ -34,11 +34,11 @@ function make_pixel(a::T)::AbstractArray where{T<:AbstractImage}
     return pixel
 end
 
-function image_like(a::T, data::AbstractArray{K})::T where {T<:AbstractImage,K<:ktensor}
+function image_like(a::T, data::AbstractArray{K})::T where {T<:AbstractImage,K<:Ktensor}
     return Image(data, a.order, a.parity, a.dimension, a.size)
 end
 
-function get_index(a::T, indices::Tuple)::ktensor where {T<:AbstractImage}
+function get_index(a::T, indices::Tuple)::Ktensor where {T<:AbstractImage}
     index = 1
     for (i, item) in enumerate(indices)
         index += (indices[i]-1)*a.size^(i-1)
@@ -47,7 +47,7 @@ function get_index(a::T, indices::Tuple)::ktensor where {T<:AbstractImage}
 end
 
 
-function set_index(a::T, indices::Tuple, kt::ktensor) where {T<:AbstractImage}
+function set_index(a::T, indices::Tuple, kt::Ktensor) where {T<:AbstractImage}
     a.dimension != kt.dimension && error("Dimensions of the tensor does not match the image")
     a.order != kt.order && error("Orders of the tensor does not match the image")
     a.parity != kt.parity && error("Parities of the tensor does not match the image")
@@ -89,7 +89,7 @@ end
 
 # Unpack
 
-function unpack(a::T)::Array{ktensor} where{T<:AbstractImage}
+function unpack(a::T)::Array{Ktensor} where{T<:AbstractImage}
     shape = Tuple(repeat([a.size], a.dimension))
     return reshape(a.data, shape)
 end
