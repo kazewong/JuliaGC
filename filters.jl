@@ -39,9 +39,9 @@ function flatten_index(indices::Tuple, size::T) where{T<:Integer}
     return index
 end
 
-# Convolve
+# Convolutions related functions
 
-function CartesianIndex(a::Missing)::Missing
+function Base.CartesianIndex(a::Missing)::Missing
     return missing
 end
 
@@ -58,15 +58,11 @@ function get_convolution_indices(a::T, b::Filter) where {T<:AbstractImage}
     return result
 end
 
-function sum_nonmissing(a::Matrix{ktensor})
-    return sum(collect(skipmissing(a)))
-end
-
-function convolve(a::T, b::Filter, index_matrix) where{T<:AbstractImage}
+function convolve(a::T, b::Filter, index_matrix::Matrix{Union{Missing, Tuple{Int64, Int64}}}) where{T<:AbstractImage}
     data_matrix = reshape(a.data, (length(a.data), 1)) .* reshape(b.data, (1, length(b.data)))
     result = copy(data_matrix)
     for i in 1:size(data_matrix,1)
-        result[i] = sum(data_matrix[collect(skipmissing(index_matrix[i,:]))])
+        result[i] = sum(data_matrix[CartesianIndex.(collect(skipmissing(index_matrix[i,:])))])
     end
     return result
 end
