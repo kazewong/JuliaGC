@@ -3,51 +3,53 @@ module ktensor
 using Combinatorics
 using LinearAlgebra
 
-struct ktensor
-    data::AbstractArray{Float64} # data of the tensor, [k, ndims]
-    order::Int8 # order of the tensor, k
-    parity::Int8 # parity of the tensor, p
-    dimension::Int8 # dimension of the space where the tensor lives, d
+abstract type AbstractKtensor end
+
+struct Ktensor <: AbstractKtensor
+    data :: AbstractArray{Float64} # data of the tensor, [k, ndims]
+    order :: Int8 # order of the tensor, k
+    parity :: Int8 # parity of the tensor, p
+    dimension :: Int8 # dimension of the space where the tensor lives, d
     
-    function ktensor(data::AbstractArray{Float64}, order::T, parity::T, dimension::T) where {T<:Integer}
+    function Ktensor(data::AbstractArray{Float64}, order::T, parity::T, dimension::T) where {T<:Integer}
         return new(data, order, parity%2, dimension)
     end
 
-    function ktensor(data::AbstractArray{Float64}; parity::T) where {T<:Integer}
+    function Ktensor(data::AbstractArray{Float64}; parity::T) where {T<:Integer}
         dimension = size(data,1)
         order = ndims(data)
         return new(data, order, parity%2, dimension)
     end
 end
 
-function Base.:+(a::K, b::Real)::K where {K<:ktensor}
-    return ktensor(a.data .+ b, parity=a.parity)
+function Base.:+(a::K, b::Real)::K where {K<:AbstractKtensor}
+    return Ktensor(a.data .+ b, parity=a.parity)
 end
 
-function Base.:+(a::K, b::ktensor)::K where {K<:ktensor}
+function Base.:+(a::K, b::Ktensor)::K where {K<:AbstractKtensor}
     a.order != b.order && error("Orders of the tensors are not equal")
     a.parity != b.parity && error("Parities of the tensors are not equal")
-    return ktensor(a.data + b.data, parity=a.parity)
+    return Ktensor(a.data + b.data, parity=a.parity)
 end
 
-function Base.:*(a::K, b::Real)::K where {K<:ktensor}
-    return ktensor(a.data .* b, parity=a.parity)
+function Base.:*(a::K, b::Real)::K where {K<:AbstractKtensor}
+    return Ktensor(a.data .* b, parity=a.parity)
 end
 
-function Base.:*(a::K, b::K) where {K<:ktensor} # Fix  outer product
+function Base.:*(a::K, b::K) where {K<:AbstractKtensor} # Fix  outer product
     if a.order == 0 || b.order == 0
-        return ktensor(a.data .* b.data, parity = a.parity + b.parity)
+        return Ktensor(a.data .* b.data, parity = a.parity + b.parity)
     end
     a_shape = Tuple(collect(Iterators.flatten([size(a.data),ntuple(i->1, b.order)])))
     a_expand = reshape(a.data, a_shape)
     b_shape = Tuple(collect(Iterators.flatten([ntuple(i->1, a.order),size(b.data)])))
     b_expand = reshape(b.data, b_shape)
-    return ktensor(a_expand .* b_expand, parity = a.parity + b.parity)
+    return Ktensor(a_expand .* b_expand, parity = a.parity + b.parity)
 end
 
 # Times group element here
 
-norm(a::ktensor)::Float64 = sqrt(sum((x,) -> x^2, a.data))
+norm(a::Ktensor)::Float64 = sqrt(sum((x,) -> x^2, a.data))
 
 @generated function _tr_dims(x::AbstractArray{T,N}; dims) where {T,N}
     # val_dims is a tuple of Val(i), Val(j), etc.
@@ -74,19 +76,19 @@ function LinearAlgebra.tr(x::AbstractArray{T,N}; dims) where {T,N}
     return _tr_dims(x; dims=selected_dims)
 end
 
-function contract(a::ktensor, axis1::T, axis2::T) where{T<:Integer}
-    return ktensor(
+function contract(a::Ktensor, axis1::T, axis2::T) where{T<:Integer}
+    return Ktensor(
         LinearAlgebra.tr(a.data; dims=(axis1, axis2)), Int8(a.order-2), a.parity, a.dimension
     )
 end
 
-function levicivita_contraction(a::ktensor, indices::Tuple) :: ktensor
+function levicivita_contraction(a::Ktensor, indices::Tuple) :: Ktensor
 # Need to check whether indexing is correct
     levi_array = collect(Base.product(ntuple(i->1:a.dimension, a.dimension)...))
     levi_array = levicivita.(collect.(reduce(vcat,levi_array)))
     levi_array = reshape(levi_array,ntuple(i->a.dimension, a.dimension))
     shape = Tuple(collect(Iterators.flatten([1,size(a.data)])))
-    return ktensor(dropdims(sum(reshape(a.data,shape).*levi_array,dims=1),dims=1),parity=a.parity+1)
+    return Ktensor(dropdims(sum(reshape(a.data,shape).*levi_array,dims=1),dims=1),parity=a.parity+1)
 end
 
 # function levicivita_multiplication(input_tensor::ktensor, indices::Tuple)

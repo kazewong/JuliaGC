@@ -1,7 +1,7 @@
 module filters
 
-include("ktensor.jl")
-include("images.jl")
+# include("ktensor.jl")
+# include("images.jl")
 
 struct Filter <: AbstractImage
     data :: AbstractArray{ktensor} # data of the tensor
@@ -32,7 +32,7 @@ end
 
 function flatten_index(indices::Tuple, size::T) where{T<:Integer}
     index = 1
-    for i in 1:length(indices)
+    for (i, item) in enumerate(indices)
         if indices[i] < 1 || indices[i] > size
             index += missing
         end
@@ -75,7 +75,7 @@ function bigness(a::Filter)
     pixels = make_pixel(a)
     pixels = collect.(reshape(pixels,length(pixels)))
     numerator, denominator = 0., 0.
-    for i in 1:length(pixels)
+    for (i, item) in enumerate(indices)
         numerator += sqrt(sum((((pixels[i].-Int(ceil(a.size/2))) .* norm(a.data[i])).^2)))
         denominator += norm(a.data[i])
     end

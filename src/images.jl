@@ -1,7 +1,5 @@
 module images
 
-include("ktensor.jl")
-
 abstract type AbstractImage end
 
 struct Image <: AbstractImage
@@ -42,7 +40,7 @@ end
 
 function get_index(a::T, indices::Tuple)::ktensor where {T<:AbstractImage}
     index = 1
-    for i in 1:length(indices)
+    for (i, item) in enumerate(indices)
         index += (indices[i]-1)*a.size^(i-1)
     end
     return a.data[index]
@@ -55,7 +53,7 @@ function set_index(a::T, indices::Tuple, kt::ktensor) where {T<:AbstractImage}
     a.parity != kt.parity && error("Parities of the tensor does not match the image")
     output = copy(a.data)
     index = 1
-    for i in 1:length(indices)
+    for (i, item) in enumerate(indices)
         index += (indices[i]-1)*a.size^(i-1)
     end
     output[index] = kt
