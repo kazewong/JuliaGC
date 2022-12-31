@@ -1,5 +1,5 @@
+module ktensor
 
-using Tullio
 using Combinatorics
 using LinearAlgebra
 
@@ -111,3 +111,5 @@ end
 #     return ktensor(result)
 # end
 # # TODO(Implement test of the functionality here)
+
+end

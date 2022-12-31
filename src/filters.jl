@@ -1,3 +1,5 @@
+module filters
+
 include("ktensor.jl")
 include("images.jl")
 
@@ -99,3 +101,5 @@ end
 
 Base.convert(::Type{Filter}, a::Image) = Filter(a.data, a.order, a.parity, a.dimension, a.size)
 Base.convert(::Type{Image}, a::Filter) = Image(a.data, a.order, a.parity, a.dimension, a.size)
+
+end

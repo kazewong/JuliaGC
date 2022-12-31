@@ -1,3 +1,5 @@
+module images
+
 include("ktensor.jl")
 
 abstract type AbstractImage end
@@ -111,4 +113,6 @@ end
 function normalize(a::T) :: T where{T<:AbstractImage}
     max_norm = maximum(norm.(a.data))
     return a .* (1/max_norm)
+end
+
 end
