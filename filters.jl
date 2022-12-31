@@ -64,7 +64,7 @@ function convolve(a::T, b::Filter, index_matrix::Matrix{Union{Missing, Tuple{Int
     for i in 1:size(data_matrix,1)
         result[i] = sum(data_matrix[CartesianIndex.(collect(skipmissing(index_matrix[i,:])))])
     end
-    return result
+    return Image(result, a.order + b.order, a.parity + b.parity, a.dimension, a.size)
 end
 
 # Bigness
