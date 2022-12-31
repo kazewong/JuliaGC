@@ -43,6 +43,21 @@ function Base.:*(a::K, b::K) where {K<:Ktensor} # Fix  outer product
     return Ktensor(a_expand .* b_expand, parity = a.parity + b.parity)
 end
 
+function Base.:*(a::KTensor, b::Matrix{Int32})::Ktensor
+    det = LinearAlgebra.det(b)
+    sign = det > 0 ? 1 : -1
+    if det != 0
+        print("Determinant of the matrix is not zero")
+        return a # Return something that complains stronger
+    end
+    if a.order == 0
+        return Ktensor(a.data .* sign ^a.parity, parity = a.parity)
+    else
+        
+    end
+
+end
+
 # Times group element here
 
 norm(a::Ktensor)::Float64 = sqrt(sum((x,) -> x^2, a.data))
