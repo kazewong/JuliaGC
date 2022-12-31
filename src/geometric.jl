@@ -1,5 +1,3 @@
-module geometric
-
 using LinearAlgebra
 
 function make_generator(dims::Int)::Vector{Matrix{Int32}}
@@ -43,5 +41,3 @@ function make_all_operators(dims::Int)::Vector{Matrix{Int32}}
 end
 
 # Add testing the group
-
-end

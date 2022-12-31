@@ -1,4 +1,4 @@
-module images
+include("ktensor.jl")
 
 abstract type AbstractImage end
 
@@ -17,7 +17,7 @@ struct Image <: AbstractImage
         data = zeros(Float64,shape)
         parity = parity % 2
         ktensors = map(x->Ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
-        return new(Ktensors, order, parity, dimension, size)
+        return new(ktensors, order, parity, dimension, size)
     end 
 
     function Image(data::AbstractArray{K}, order::T, parity::T, dimension::T, size::T) where {K<:Ktensor,T}
@@ -111,6 +111,4 @@ end
 function normalize(a::T) :: T where{T<:AbstractImage}
     max_norm = maximum(norm.(a.data))
     return a .* (1/max_norm)
-end
-
 end

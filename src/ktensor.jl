@@ -1,11 +1,7 @@
-module ktensor
-
 using Combinatorics
 using LinearAlgebra
 
-abstract type AbstractKtensor end
-
-struct Ktensor <: AbstractKtensor
+struct Ktensor
     data :: AbstractArray{Float64} # data of the tensor, [k, ndims]
     order :: Int8 # order of the tensor, k
     parity :: Int8 # parity of the tensor, p
@@ -22,21 +18,21 @@ struct Ktensor <: AbstractKtensor
     end
 end
 
-function Base.:+(a::K, b::Real)::K where {K<:AbstractKtensor}
+function Base.:+(a::K, b::Real)::K where {K<:Ktensor}
     return Ktensor(a.data .+ b, parity=a.parity)
 end
 
-function Base.:+(a::K, b::Ktensor)::K where {K<:AbstractKtensor}
+function Base.:+(a::K, b::Ktensor)::K where {K<:Ktensor}
     a.order != b.order && error("Orders of the tensors are not equal")
     a.parity != b.parity && error("Parities of the tensors are not equal")
     return Ktensor(a.data + b.data, parity=a.parity)
 end
 
-function Base.:*(a::K, b::Real)::K where {K<:AbstractKtensor}
+function Base.:*(a::K, b::Real)::K where {K<:Ktensor}
     return Ktensor(a.data .* b, parity=a.parity)
 end
 
-function Base.:*(a::K, b::K) where {K<:AbstractKtensor} # Fix  outer product
+function Base.:*(a::K, b::K) where {K<:Ktensor} # Fix  outer product
     if a.order == 0 || b.order == 0
         return Ktensor(a.data .* b.data, parity = a.parity + b.parity)
     end
@@ -113,5 +109,3 @@ end
 #     return ktensor(result)
 # end
 # # TODO(Implement test of the functionality here)
-
-end
