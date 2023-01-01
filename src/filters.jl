@@ -93,7 +93,7 @@ function rectify(a::Filter)
 end
 
 function get_unique_invariant_filters(size::Int8, order::Int8, parity::Int8, dimension::Int8, operators::Matrix{Int8})
-
+# Its 1/1/2023 0005 and I am still on this, I hate my life
 end
 
 Base.convert(::Type{Filter}, a::Image) = Filter(a.data, a.order, a.parity, a.dimension, a.size)
