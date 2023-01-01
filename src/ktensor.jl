@@ -43,19 +43,30 @@ function Base.:*(a::K, b::K) where {K<:Ktensor} # Fix  outer product
     return Ktensor(a_expand .* b_expand, parity = a.parity + b.parity)
 end
 
-function Base.:*(a::KTensor, b::Matrix{Int32})::Ktensor
+function Base.:*(a::Ktensor, b::Matrix{Int32})::Ktensor
+    D = a.dimension
+    k = a.order
     det = LinearAlgebra.det(b)
     sign = det > 0 ? 1 : -1
-    if det != 0
-        print("Determinant of the matrix is not zero")
-        return a # Return something that complains stronger
+    result = a
+    if det != 1
+        print("Determinant of the matrix is not ope")
+        # Return something that complains stronger
     end
     if a.order == 0
-        return Ktensor(a.data .* sign ^a.parity, parity = a.parity)
-    else
-        
+        result = Ktensor(a.data .* sign ^a.parity, parity = a.parity)
+    else 
+        data = reshape(a.data, Tuple(collect(Iterators.flatten(ntuple(i->(D,1),k)))))
+        operator = reshape(b, Tuple(collect(Iterators.flatten(((D,D),ntuple(i->(1,1),k-1)...)))))
+        for i in 1:k-1
+            local_operator = reshape(b, Tuple(collect(Iterators.flatten((ntuple(j->(1,1),i)...,(D,D),ntuple(j->(1,1),k-i-1)...)))))
+            operator = operator .* local_operator
+        end
+        stacked = data.*operator
+        sum_dims = Tuple(collect(1:2:2*k-1))
+        result = Ktensor(dropdims(sum(stacked; dims=sum_dims), dims=sum_dims), parity = a.parity)
     end
-
+    return result
 end
 
 # Times group element here
