@@ -63,7 +63,7 @@ function Base.:*(a::Ktensor, b::Matrix{Int32})::Ktensor
             operator = operator .* local_operator
         end
         stacked = data.*operator
-        sum_dims = Tuple(collect(1:2:2*k-1))
+        sum_dims = Tuple(collect(2:2:2*k))
         result = Ktensor(dropdims(sum(stacked; dims=sum_dims), dims=sum_dims), parity = a.parity)
     end
     return result
