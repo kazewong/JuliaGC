@@ -49,7 +49,7 @@ function Base.:*(a::Ktensor, b::Matrix{Int32})::Ktensor
     det = LinearAlgebra.det(b)
     sign = det > 0 ? 1 : -1
     result = a
-    if det != 1
+    if abs(det) != 1
         print("Determinant of the matrix is not ope")
         # Return something that complains stronger
     end
@@ -64,7 +64,7 @@ function Base.:*(a::Ktensor, b::Matrix{Int32})::Ktensor
         end
         stacked = data.*operator
         sum_dims = Tuple(collect(2:2:2*k))
-        result = Ktensor(dropdims(sum(stacked; dims=sum_dims), dims=sum_dims), parity = a.parity)
+        result = Ktensor(dropdims(sum(stacked; dims=sum_dims), dims=sum_dims)*sign^a.parity, parity = a.parity)
     end
     return result
 end
@@ -100,7 +100,7 @@ end
 
 function contract(a::Ktensor, axis1::T, axis2::T) where{T<:Integer}
     return Ktensor(
-        LinearAlgebra.tr(a.data; dims=(axis1, axis2)), Int8(a.order-2), a.parity, a.dimension
+        collect(LinearAlgebra.tr(a.data; dims=(axis1, axis2))), Int8(a.order-2), a.parity, a.dimension
     )
 end
 
