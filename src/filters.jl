@@ -1,5 +1,3 @@
-include("images.jl")
-
 struct Filter <: AbstractImage
     data :: AbstractArray{Ktensor} # data of the tensor
     order :: Int8
@@ -7,15 +5,19 @@ struct Filter <: AbstractImage
     dimension :: Int8
     size :: Int8
 
-    function Filter(order:: Int, parity:: Int, dimension:: Int, size:: Int)
+    function Filter(order:: Int, parity:: Int, dimension:: Int, size:: Int, rand::Bool=false)
         shape = (size^dimension)
         for i in 1:order
             shape = (shape..., dimension)
         end
-        data = zeros(Float64,shape)
+        if rand
+            data = randn(Float64,shape)
+        else
+            data = zeros(Float64,shape)
+        end
         parity = parity % 2
         ktensors = map(x->Ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
-        return new(Ktensors, order, parity, dimension, size)
+        return new(ktensors, order, parity, dimension, size)
     end
 
     function Filter(data::AbstractArray{Ktensor}, order::T, parity::T, ndim::T, size::T) where {T<:Integer}

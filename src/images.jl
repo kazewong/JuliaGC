@@ -1,5 +1,3 @@
-include("ktensor.jl")
-
 abstract type AbstractImage end
 
 struct Image <: AbstractImage
