@@ -45,10 +45,6 @@ function Base.:-(a::K, b::Real)::K where {K<:Ktensor}
     return a+(-1)*b
 end
 
-function Base.:-(a::Real, b::K)::K where {K<:Ktensor}
-    return a+(-1)*b
-end
-
 function Base.:*(a::K, b::Real)::K where {K<:Ktensor}
     return Ktensor(a.data .* b, parity=a.parity)
 end

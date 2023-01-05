@@ -89,8 +89,8 @@ function Base.:-(a::T, b::ST)::T where{T<:AbstractImage,ST<:Real}
     return a + (-1)*b
 end
 
-function Base.:-(a::ST, b::T)::T where{T<:AbstractImage,ST<:Real}
-    return (-1)*b + a
+function Base.:-(a::T, b::T)::T where{T<:AbstractImage}
+    return a + (-1)*b
 end
 
 function Base.:*(a::T, b::ST)::T where {T<:AbstractImage, ST<:Real}
