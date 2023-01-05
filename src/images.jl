@@ -9,12 +9,16 @@ struct Image <: AbstractImage
     dimension :: Int8
     size :: Int8 # size of each dimension of the image, should change to a tuple later
 
-    function Image(order:: Int, parity:: Int, dimension:: Int, size:: Int)
+    function Image(order:: Int, parity:: Int, dimension:: Int, size:: Int, rand::Bool=false)
         shape = (size^dimension)
         for i in 1:order
             shape = (shape..., dimension)
         end
-        data = zeros(Float64,shape)
+        if rand
+            data = randn(Float64,shape)
+        else
+            data = zeros(Float64,shape)
+        end
         parity = parity % 2
         ktensors = map(x->Ktensor(x; parity=parity),collect(eachslice(data,dims=1)))
         return new(ktensors, order, parity, dimension, size)
@@ -25,7 +29,7 @@ struct Image <: AbstractImage
     end
 end
 
-# Basic functionalities
+# Constructors and data manipulation
 
 function make_pixel(a::T)::AbstractArray where{T<:AbstractImage}
     # Julia counts from 1, so we don't need to make the key, idiot.
@@ -46,7 +50,6 @@ function get_index(a::T, indices::Tuple)::Ktensor where {T<:AbstractImage}
     return a.data[index]
 end
 
-
 function set_index(a::T, indices::Tuple, kt::Ktensor) where {T<:AbstractImage}
     a.dimension != kt.dimension && error("Dimensions of the tensor does not match the image")
     a.order != kt.order && error("Orders of the tensor does not match the image")
@@ -64,10 +67,14 @@ function move_to_cuda(a::T)::T where{T<:AbstractImage}
     return image_like(a, move_to_cuda.(a.data))
 end
 
-# Addition
+# Basic arithmetic
 
 function Base.:+(a::T, b::ST)::T where {T<:AbstractImage,ST<:Real}
     return image_like(a, a.data .+ b)
+end
+
+function Base.:+(a::ST, b::T)::T where {T<:AbstractImage,ST<:Real}
+    return image_like(b, a .+ b.data)
 end
 
 function Base.:+(a::T, b::T)::T where{T<:AbstractImage}
@@ -78,10 +85,20 @@ function Base.:+(a::T, b::T)::T where{T<:AbstractImage}
     return image_like(a, a.data .+ b.data)
 end
 
-# Multiplication
+function Base.:-(a::T, b::ST)::T where{T<:AbstractImage,ST<:Real}
+    return a + (-1)*b
+end
+
+function Base.:-(a::ST, b::T)::T where{T<:AbstractImage,ST<:Real}
+    return (-1)*b + a
+end
 
 function Base.:*(a::T, b::ST)::T where {T<:AbstractImage, ST<:Real}
     return image_like(a, a.data .* b)
+end
+
+function Base.:*(a::ST, b::T)::T where {T<:AbstractImage, ST<:Real}
+    return image_like(b, a .* b.data)
 end
 
 function Base.:*(a::T, b::T)::T where {T<:AbstractImage}

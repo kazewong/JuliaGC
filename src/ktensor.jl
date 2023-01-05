@@ -19,12 +19,20 @@ struct Ktensor{}
     end
 end
 
+#### Constructors and data manipulation
+
 function move_to_cuda(a::K) where {K<:Ktensor}
     return Ktensor(CUDA.cu(a.data), parity=a.parity)
 end
 
+#### Basic arithmetic operations
+
 function Base.:+(a::K, b::Real)::K where {K<:Ktensor}
     return Ktensor(a.data .+ b, parity=a.parity)
+end
+
+function Base.:+(a::Real, b::K)::K where {K<:Ktensor}
+    return Ktensor(a .+ b.data, parity=b.parity)
 end
 
 function Base.:+(a::K, b::Ktensor)::K where {K<:Ktensor}
@@ -33,11 +41,23 @@ function Base.:+(a::K, b::Ktensor)::K where {K<:Ktensor}
     return Ktensor(a.data + b.data, parity=a.parity)
 end
 
+function Base.:-(a::K, b::Real)::K where {K<:Ktensor}
+    return a+(-1)*b
+end
+
+function Base.:-(a::Real, b::K)::K where {K<:Ktensor}
+    return a+(-1)*b
+end
+
 function Base.:*(a::K, b::Real)::K where {K<:Ktensor}
     return Ktensor(a.data .* b, parity=a.parity)
 end
 
-function Base.:*(a::K, b::K) where {K<:Ktensor} # Fix  outer product
+function Base.:*(a::Real, b::K)::K where {K<:Ktensor}
+    return Ktensor(a .* b.data, parity=b.parity)
+end
+
+function Base.:*(a::K, b::K) where {K<:Ktensor} # Check whether this is the right way to do it
     if a.order == 0 || b.order == 0
         return Ktensor(a.data .* b.data, parity = a.parity + b.parity)
     end
@@ -49,6 +69,7 @@ function Base.:*(a::K, b::K) where {K<:Ktensor} # Fix  outer product
 end
 
 function Base.:*(a::Ktensor, b::Matrix{Int32})::Ktensor
+    # Times group element
     D = a.dimension
     k = a.order
     det = LinearAlgebra.det(b)
@@ -74,7 +95,6 @@ function Base.:*(a::Ktensor, b::Matrix{Int32})::Ktensor
     return result
 end
 
-# Times group element here
 
 norm(a::Ktensor)::Float64 = sqrt(sum((x,) -> x^2, a.data))
 
