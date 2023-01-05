@@ -60,6 +60,9 @@ function set_index(a::T, indices::Tuple, kt::Ktensor) where {T<:AbstractImage}
     return image_like(a, output)
 end
 
+function move_to_cuda(a::T)::T where{T<:AbstractImage}
+    return image_like(a, move_to_cuda.(a.data))
+end
 
 # Addition
 

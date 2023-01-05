@@ -1,5 +1,6 @@
 using Combinatorics
 using LinearAlgebra
+using CUDA
 
 struct Ktensor{}
     data :: AbstractArray # data of the tensor, [k, ndims]
@@ -16,6 +17,10 @@ struct Ktensor{}
         order = ndims(data)
         return new(data, order, parity%2, dimension)
     end
+end
+
+function move_to_cuda(a::K) where {K<:Ktensor}
+    return Ktensor(CUDA.cu(a.data), parity=a.parity)
 end
 
 function Base.:+(a::K, b::Real)::K where {K<:Ktensor}
